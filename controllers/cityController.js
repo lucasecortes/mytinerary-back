@@ -2,7 +2,6 @@ const City = require('../models/City')
 
 const cityController = {
     create: async(req, res) => {
-        // const {city,country,photo,population,fundation} = req.body
         try {
             await new City (req.body).save()
             res.status(201).json({
@@ -14,6 +13,30 @@ const cityController = {
                 message: 'Could not create city',
                 success: false
             })
+        }
+    },
+    all: async(req, res) => {
+        let query = {}
+        
+        if (req.query.city) {
+            query.city = req.query.city
+        }
+        if (req.query.country) {
+            query.country = req.query.country
+        }
+        if (req.query.population) {
+            query.population = req.query.population
+        }
+        if (req.query.foundation) {
+            query.foundation = req.query.foundation
+        }
+
+        try {
+            let city = await City.find()
+            res.json(city)
+        } catch (error) {
+            console.log(error)
+            res.status(500).json()
         }
     },
     read: async(req, res) => {
