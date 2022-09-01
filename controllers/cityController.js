@@ -32,7 +32,7 @@ const cityController = {
         }
 
         try {
-            let city = await City.find()
+            let city = await City.find(query)
             res.json(city)
         } catch (error) {
             console.log(error)
