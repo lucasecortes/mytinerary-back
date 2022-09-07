@@ -71,6 +71,8 @@ const itineraryController = {
     },
 
     all: async (req, res) => {
+        let query = {}
+
         if (req.query.city) {
             query.city = req.query.city
         }
