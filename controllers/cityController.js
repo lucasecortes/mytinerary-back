@@ -7,7 +7,6 @@ const cityController = {
             res.status(201).json({
                 message: 'City created',
                 success: true
-                // id: cities._id
             })
         } catch (error) {
             res.status(400).json({
@@ -21,11 +20,13 @@ const cityController = {
         
         if (req.query.city) {
             query.city = req.query.city
+            let regExp = new RegExp(`^${query.city}`, "i")
+            query.city = regExp
         }
 
         try {
             let city = await City.find(query)
-            res.json(city)
+            res.status(200).json(city)
         } catch (error) {
             console.log(error)
             res.status(500).json()
