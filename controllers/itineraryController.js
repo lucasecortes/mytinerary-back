@@ -1,4 +1,3 @@
-const { query } = require('express')
 const Itinerary = require('../models/Itinerary')
 
 const itineraryController = {

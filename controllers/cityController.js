@@ -22,15 +22,6 @@ const cityController = {
         if (req.query.city) {
             query.city = req.query.city
         }
-        if (req.query.country) {
-            query.country = req.query.country
-        }
-        if (req.query.population) {
-            query.population = req.query.population
-        }
-        if (req.query.foundation) {
-            query.foundation = req.query.foundation
-        }
 
         try {
             let city = await City.find(query)
