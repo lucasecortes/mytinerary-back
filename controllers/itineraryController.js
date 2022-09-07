@@ -1,3 +1,4 @@
+const { query } = require('express')
 const Itinerary = require('../models/Itinerary')
 
 const itineraryController = {
@@ -67,7 +68,44 @@ const itineraryController = {
                 success: false
             })
         }
+    },
+
+    all: async (req, res) => {
+        if (req.query.city) {
+            query.city = req.query.city
+        }
+
+        if (req.query.user) {
+            query.user = req.query.user
+        }
+
+        try {
+            let itineraries = await Itinerary.find(query)
+            .populate('city',{city:1})
+            .populate('user',{name:1})
+
+            if (itineraries) {
+                res.status(200).json({
+                    message: "you get itineraries",
+                    response: itineraries,
+                    success: true
+                })
+            } else {
+                res.status(404).json({
+                    message: "couldn't find itineraries",
+                    success: false
+                })
+            }
+        } catch (error) {
+            console.log(error)
+
+            res.status(400).json({
+                message: "error",
+                success: false
+            })
+        }
     }
 }
+
 
 module.exports = itineraryController

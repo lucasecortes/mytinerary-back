@@ -16,7 +16,23 @@ const userController = {
                 success: false
             })
         }
+    },
+
+    all: async (req, res) => {
+        try {
+            let users = await User.find()
+
+            res.status(200).json({
+                message: "You get users",
+                response: users,
+                success: true
+            })
+        } catch (error){
+            console.log(error)
+            res.status(500).json()
+        }
     }
 }
+
 
 module.exports = userController
