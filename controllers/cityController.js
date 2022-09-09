@@ -20,20 +20,13 @@ const cityController = {
         
         if (req.query.city) {
             query.city = req.query.city
-        }
-        if (req.query.country) {
-            query.country = req.query.country
-        }
-        if (req.query.population) {
-            query.population = req.query.population
-        }
-        if (req.query.foundation) {
-            query.foundation = req.query.foundation
+            let regExp = new RegExp(`^${query.city}`, "i")
+            query.city = regExp
         }
 
         try {
             let city = await City.find(query)
-            res.json(city)
+            res.status(200).json(city)
         } catch (error) {
             console.log(error)
             res.status(500).json()
