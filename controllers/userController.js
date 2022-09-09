@@ -36,7 +36,7 @@ const userController = {
     },
 
     signUp: async(req, res) => {
-        const {name, photo, password, email, role, from} = req.body
+        let {name, photo, password, email, role, from} = req.body
 
         try {
             let user = await User.findOne({email})
