@@ -1,6 +1,7 @@
 const User = require('../models/User')
 const crypto = require('crypto')
 const bcryptjs = require('bcryptjs')
+const sendMail = require('../controllers/sendMail')
 
 const userController = {
     create: async(req,res) => {
@@ -36,10 +37,10 @@ const userController = {
     },
 
     signUp: async(req, res) => {
-        let {name, photo, password, email, role, from} = req.body
+        const {name, photo, password, mail, role, from} = req.body
 
         try {
-            let user = await User.findOne({email})
+            let user = await User.findOne({mail})
             if (!user) {
                 let logged = false
                 let verified = false
@@ -47,8 +48,10 @@ const userController = {
 
                 if(from==='form'){
                     password = bcryptjs.hashSync(password,10)
+                    
+                    user = await new User({name, photo, mail, password:[password], role, from:[from], logged, verified, code}).save()
 
-                    user = await new User({name, photo, email, password:[password], role, from:[from], logged, verified, code}).save()
+                    sendMail(mail,code)
 
                     res.status(201).json({
                         message: "Thanks for register",
@@ -58,7 +61,7 @@ const userController = {
                     password = bcryptjs.hashSync(password,10)
                     verified = true
 
-                    user = await new User({name, photo, email, password:[password], role, from:[from], logged, verified, code}).save()
+                    user = await new User({name, photo, mail, password:[password], role, from:[from], logged, verified, code}).save()
 
                     res.status(201).json({
                         message: "Thanks for register with "+from,
@@ -79,8 +82,6 @@ const userController = {
                     await user.save()
                 }
             }
-
-
         } catch(error) {
             console.log(error)
             res.status(400).json({
@@ -90,9 +91,109 @@ const userController = {
         }
     },
 
-    verifyMail: async() => {},
+    verifyMail: async(req, res) => {
+        const {code} = req.params
+        try {
+            let user = await User.findOne({code:code})
+            if (user) {
+                user.verified = true
+                await user.save()
+                res.redirect('http://localhost:3000/')
+            } else {
+                res.status(404).json({
+                    message: "Email has not account yet",
+                    success: false
+                })
+            }
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({
+                message: "Couldn't verify account",
+                success: false
+            })
+        }
+    },
 
-    signIn: async() => {},
+    signIn: async(req, res) => {
+        const {mail, password, from} = req.body
+
+        try {
+            const user = await User.findOne({mail})
+
+            if(!user) {
+                res.status(404).json({
+                    message: "User doesn't exists, please sign up",
+                    success: false
+                })
+            } else if (user.verified) {
+                const checkPass = user.password.filter(passwordElement => bcryptjs.compareSync(password, passwordElement))
+
+                if(from == 'form') {
+                    if (checkPass.length > 0) {
+                        const loginUser = {
+                            id: user._id,
+                            name: user.name,
+                            mail: user.mail,
+                            role: user.role,
+                            photo: user.photo
+                        }
+
+                        user.logged = true
+                        await user.save()
+
+                        res.status(200).json({
+                            message: 'Welcome ' + user.name,
+                            success: true,
+                            response: {user: loginUser}
+                        })
+                    } else {
+                        res.status(400).json({
+                            success: false,
+                            message: 'Username or password incorrect'
+                        })
+                    }
+
+                } else {
+                    if (checkPass.length > 0) {
+                        const loginUser = {
+                            id: user._id,
+                            name: user.name,
+                            mail: user.mail,
+                            role: user.role,
+                            photo: user.photo
+                        }
+
+                        user.logged = true
+                        await user.save()
+
+                        res.status(200).json({
+                            message: 'Welcome ' + user.name,
+                            success: true,
+                            response: {user: loginUser}
+                        })
+                    } else {
+                        res.status(400).json({
+                            success: false,
+                            message: 'Credential invalid'
+                        })
+                    }
+                }
+
+            } else {
+                res.status(401).json({
+                    success: false,
+                    message: 'Please, verify your email account and try again'
+                })
+            }
+
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({
+                success: false,
+                message: 'Sign in error, try again later'
+            })
+        }
+    },
 
     signOut: async() => {}
 }
