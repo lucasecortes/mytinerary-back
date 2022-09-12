@@ -1,20 +1,12 @@
 const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
-const { callbackPromise } = require('nodemailer/lib/shared')
 const OAuth2 = google.auth.OAuth2
-const {GOOGLE_ID, GOOGLE_REFRESH, GOOGLE_SECRET, GOOGLE_URL, GOOGLE_USER} = process.env
+const { ID_CLIENT, GOOGLE_REFRESH, GOOGLE_SECRET, GOOGLE_URL, GOOGLE_USER } = process.env
 
-const sendMail =  async(mail, code) => {
-    const client = new OAuth2(
-        GOOGLE_ID,
-        GOOGLE_SECRET,
-        GOOGLE_URL='https://developers.google.com/oauthplayground'
+const sendMail = async (mail, code) => {
+    const client = new OAuth2(ID_CLIENT, GOOGLE_SECRET, GOOGLE_URL)
 
-    )
-
-    client.setCredentials({
-        refresh_token: GOOGLE_REFRESH
-    })
+    client.setCredentials({ refresh_token: GOOGLE_REFRESH })
 
     const accessToken = client.getAccessToken()
 
@@ -23,7 +15,7 @@ const sendMail =  async(mail, code) => {
         auth: {
             user: GOOGLE_USER,
             type: 'OAuth2',
-            clientId: GOOGLE_ID,
+            clientId: ID_CLIENT,
             clientSecret: GOOGLE_SECRET,
             refreshToken: GOOGLE_REFRESH,
             accessToken: accessToken
@@ -36,19 +28,20 @@ const sendMail =  async(mail, code) => {
     const mailOptions = {
         from: GOOGLE_USER,
         to: mail,
-        subject: 'verify mytinerary account',
+        subject: 'Verify MyTinerary account',
         html: `
-            <div>
-                HOLIS
-            </div>
-        `
+                    <div>
+                        <h1>Hola ${mail}</h1>
+                        <a href="http://localhost:4000/auth/verify/${code}">Click to verify</a>
+                    </div>
+                    `
     }
 
     await transport.sendMail(mailOptions, (error, response) => {
-        if(error) {
+        if (error) {
             console.log(error)
         } else {
-            console.log('OK')
+            console.log('Ok')
         }
     })
 }
