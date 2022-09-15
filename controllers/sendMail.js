@@ -30,11 +30,12 @@ const sendMail = async (mail, code) => {
         to: mail,
         subject: 'Verify MyTinerary account',
         html: `
-                    <div>
-                        <h1>Hola ${mail}</h1>
-                        <a href="http://localhost:4000/auth/verify/${code}">Click to verify</a>
-                    </div>
-                    `
+                <div>
+                    <h1>Hello ${mail}</h1>
+                    <a href="http://localhost:4000/auth/verification/${code}">Click to verify</a>
+                </div>
+                <p>If you didn't create an account using this email, please ignore this email.</p>
+            `
     }
 
     await transport.sendMail(mailOptions, (error, response) => {
