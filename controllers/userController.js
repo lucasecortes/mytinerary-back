@@ -2,6 +2,24 @@ const User = require('../models/User')
 const crypto = require('crypto')
 const bcryptjs = require('bcryptjs')
 const sendMail = require('../controllers/sendMail')
+const Joi = require('joi')
+
+const validator = Joi.object({
+    name: Joi.string().pattern(/^[a-zA-Z]+$/).min(3).max(15).required(),
+    lastname: Joi.string().pattern(/^[a-zA-Z]+$/).min(3).max(15).required(),
+    mail: Joi.alternatives().try( Joi.string()
+        .lowercase()
+        .email({
+            minDomainSegments: 2,
+            tlds: { allow: ["com", "net", "ar", "org"], },
+        }),
+        ).required().error(new Error("Invalid email")),
+    photo: Joi.string().uri().required(),
+    country: Joi.string().min(4).max(30).required(),
+    password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+    role: Joi.string().min(3).max(15).required(),
+    from: Joi.string().min(3).max(15).required()
+})
 
 const userController = {
     all: async (req, res) => {
@@ -13,28 +31,29 @@ const userController = {
                 response: users,
                 success: true
             })
-        } catch (error){
+        } catch (error) {
             console.log(error)
             res.status(500).json()
         }
     },
 
-    signUp: async(req, res) => {
-        let {name, photo, password, mail, role, from, country, lastName} = req.body
+    signUp: async (req, res) => {
+        let { name, photo, password, mail, role, from, country, lastName } = req.body
 
         try {
-            let user = await User.findOne({mail})
+            let result = await validator.validateAsync(req.body)
+            let user = await User.findOne({ mail })
             if (!user) {
                 let loggedIn = false
                 let verified = false
                 let code = crypto.randomBytes(15).toString('hex')
 
-                if(from==='form'){
-                    password = bcryptjs.hashSync(password,10)
-                    
-                    user = await new User({country, lastName, name, photo, mail, password:[password], role, from:[from], loggedIn, verified, code}).save()
+                if (from === 'form') {
+                    password = bcryptjs.hashSync(password, 10)
 
-                    sendMail(mail,code)
+                    user = await new User({ country, lastName, name, photo, mail, password: [password], role, from: [from], loggedIn, verified, code }).save()
+
+                    sendMail(mail, code)
 
                     res.status(201).json({
                         message: "Thanks for register",
@@ -42,18 +61,14 @@ const userController = {
                     })
                 } else {
 
-
-
-                    password = bcryptjs.hashSync(password,10)
-
-
+                    password = bcryptjs.hashSync(password, 10)
 
                     verified = true
 
-                    user = await new User({country, lastName, name, photo, mail, password:[password], role, from:[from], loggedIn, verified, code}).save()
+                    user = await new User({ country, lastName, name, photo, mail, password: [password], role, from: [from], loggedIn, verified, code }).save()
 
                     res.status(201).json({
-                        message: "Thanks for register with "+ from,
+                        message: "Thanks for register with " + from,
                         success: true
                     })
                 }
@@ -66,12 +81,12 @@ const userController = {
                 } else {
                     user.from.push(from)
                     user.verified = true
-                    user.password.push(bcryptjs.hashSync(password,10))
+                    user.password.push(bcryptjs.hashSync(password, 10))
 
                     await user.save()
                 }
             }
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             res.status(400).json({
                 message: "Couldn't signed up",
@@ -80,10 +95,10 @@ const userController = {
         }
     },
 
-    verifyMail: async(req, res) => {
-        const {code} = req.params
+    verifyMail: async (req, res) => {
+        const { code } = req.params
         try {
-            let user = await User.findOne({code:code})
+            let user = await User.findOne({ code: code })
             if (user) {
                 user.verified = true
                 await user.save()
@@ -103,13 +118,13 @@ const userController = {
         }
     },
 
-    signIn: async(req, res) => {
-        const {mail, password, from} = req.body
+    signIn: async (req, res) => {
+        const { mail, password, from } = req.body
 
         try {
-            const user = await User.findOne({mail})
+            const user = await User.findOne({ mail })
 
-            if(!user) {
+            if (!user) {
                 res.status(404).json({
                     message: "User doesn't exists, please sign up",
                     success: false
@@ -117,7 +132,7 @@ const userController = {
             } else if (user.verified) {
                 const checkPass = user.password.filter(passwordElement => bcryptjs.compareSync(password, passwordElement))
 
-                if(from == 'form') {
+                if (from == 'form') {
                     if (checkPass.length > 0) {
                         const loginUser = {
                             id: user._id,
@@ -133,7 +148,7 @@ const userController = {
                         res.status(200).json({
                             message: 'Welcome ' + user.name,
                             success: true,
-                            response: {user: loginUser}
+                            response: { user: loginUser }
                         })
                     } else {
                         res.status(400).json({
@@ -158,7 +173,7 @@ const userController = {
                         res.status(200).json({
                             message: 'Welcome ' + user.name,
                             success: true,
-                            response: {user: loginUser}
+                            response: { user: loginUser }
                         })
                     } else {
                         res.status(400).json({
@@ -184,19 +199,19 @@ const userController = {
         }
     },
 
-    signOut: async(req, res) => {
-        
-        const {mail} = req.body
+    signOut: async (req, res) => {
+
+        const { mail } = req.body
 
         try {
-            const user = await User.findOne({mail})
+            const user = await User.findOne({ mail })
 
             user.loggedIn = false
             await user.save()
 
             res.status(200).json({
                 message: 'Good bye sir ' + user.name,
-                success: true        
+                success: true
             })
 
 
@@ -207,11 +222,7 @@ const userController = {
                 message: 'Sign in error, try again later'
             })
         }
-      
-
-
     }
 }
-
 
 module.exports = userController
