@@ -8,6 +8,6 @@ router.get('/', all);
 router.get('/signup', all);
 router.post('/signup', signUp)
 router.post('/signin', signIn)
-router.get('/verify/:code', verifyMail)
+router.get('/verification/:code', verifyMail)
 
 module.exports = router;
