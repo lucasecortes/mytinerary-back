@@ -204,7 +204,7 @@ const userController = {
             console.log(error)
             res.status(400).json({
                 success: false,
-                message: 'Sign in error, try again later'
+                message: 'Sign out error, try again later'
             })
         }
       
