@@ -2,8 +2,8 @@ const City = require('../models/City')
 const Joi = require('joi')
 
 const validator = Joi.object({
-    city: Joi.string().required(),
-    country: Joi.string().required(),
+    city: Joi.string().pattern(/^[a-zA-Z ]+$/).required(),
+    country: Joi.string().pattern(/^[a-zA-Z]+$/).required(),
     photo: Joi.string().uri().required(),
     population: Joi.number().integer().min(1000).max(100000000).required(),
     founded: Joi.date().required()
