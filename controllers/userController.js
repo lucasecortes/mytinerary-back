@@ -5,8 +5,8 @@ const sendMail = require('../controllers/sendMail')
 const Joi = require('joi')
 
 const validator = Joi.object({
-    name: Joi.string().pattern(/^[a-zA-Z]+$/).min(3).max(15).required(),
-    lastname: Joi.string().pattern(/^[a-zA-Z]+$/).min(3).max(15).required(),
+    name: Joi.string().pattern(/^[a-zA-Z ]+$/).min(3).max(15).required(),
+    lastName: Joi.string().pattern(/^[a-zA-Z ]+$/).min(3).max(15).required(),
     mail: Joi.alternatives().try( Joi.string()
         .lowercase()
         .email({
@@ -89,7 +89,7 @@ const userController = {
         } catch (error) {
             console.log(error)
             res.status(400).json({
-                message: "Couldn't signed up",
+                message: error.message,
                 success: false
             })
         }
@@ -123,10 +123,10 @@ const userController = {
 
         try {
             const user = await User.findOne({ mail })
-
+console.log(mail)
             if (!user) {
                 res.status(404).json({
-                    message: "User doesn't exists, please sign up",
+                    message: "This user is not registed, please sign up ",
                     success: false
                 })
             } else if (user.verified) {
@@ -146,7 +146,7 @@ const userController = {
                         await user.save()
 
                         res.status(200).json({
-                            message: 'Welcome ' + user.name,
+                            message: 'Welcome ' + user.name + " " + user.lastName,
                             success: true,
                             response: { user: loginUser }
                         })
