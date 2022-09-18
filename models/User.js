@@ -10,7 +10,8 @@ const usersSchema = new mongoose.Schema({
     from: [{type:String, required: true}],
     loggedIn: {type: Boolean, required: false},
     verified: {type: Boolean, required: false},
-    code: {type: String , required: true}
+    code: {type: String , required: true},
+    role: {type: String, required: true}
 })
 
 const User = mongoose.model(
