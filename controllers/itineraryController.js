@@ -95,7 +95,7 @@ const itineraryController = {
         try {
             let itineraries = await Itinerary.find(query)
             .populate('city',{city:1})
-            .populate('user',{name:1})
+            .populate('user',{name:1, photo:1})
 
             if (itineraries) {
                 res.status(200).json({
