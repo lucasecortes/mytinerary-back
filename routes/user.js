@@ -13,3 +13,5 @@ router.post('/signin', signIn)
 router.get('/verification/:code', verifyMail)
 
 module.exports = router;
+
+// passport.authenticate('jwt', {session:false}),
