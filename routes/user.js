@@ -1,9 +1,17 @@
 var express = require('express');
 var router = express.Router();
-const {create, all} = require('../controllers/userController')
+const {all, oneUser, verifyMail, signUp, signIn, signOut} = require('../controllers/userController')
+
 
 /* GET users listing. */
-router.post('/', create);
 router.get('/', all);
+router.get('/:id', oneUser);
+router.get('/signup', all);
+router.post('/signup', signUp)
+router.post('/signout', signOut)
+router.post('/signin', signIn)
+router.get('/verification/:code', verifyMail)
 
 module.exports = router;
+
+// passport.authenticate('jwt', {session:false}),

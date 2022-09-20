@@ -47,6 +47,33 @@ const activityController = {
                 success: false,
             })
         }
+    },
+
+    getActivity: async (req, res) => {
+        const {id} = req.params
+        try {
+            let activity = await Activity.find(query)
+            .populate('itinerary', {price:1, name:1})
+
+            if (activity) {
+                res.status("200").json({
+                    message: "activity found",
+                    response: activity,
+                    success: true,
+                })
+            } else {
+                res.status("404").json({
+                    message: "Could not be found",
+                    success: false,
+                })
+            } 
+        } catch (error) {
+            console.log(error)
+            res.status("400").json({
+                message: "Error",
+                success: false,
+            })
+        }
     }
 }
 
