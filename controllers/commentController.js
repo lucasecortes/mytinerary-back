@@ -28,7 +28,7 @@ const commentController = {
         try {
             let comments = await Comment.find(query)
             .populate("itinerary",{name:1})
-            .populate("user",{name:1})
+            .populate("user",{name:1, lastName:1, mail:1, photo:1})
             if (comments) {
                 res.status("200").json({
                     message: "These are the comments",
