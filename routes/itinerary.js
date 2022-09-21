@@ -1,8 +1,10 @@
 var express = require('express');
 var router = express.Router();
-const {create, update, destroy, all} = require('../controllers/itineraryController')
+let passport = require('../config/passport');
+const {create, update, destroy, all, like} = require('../controllers/itineraryController')
 
 router.post('/', create);
+router.post('/like/:id', passport.authenticate('jwt', {session:false}), like)
 router.get('/', all)
 router.patch('/:id', update)
 router.delete('/:id', destroy)
