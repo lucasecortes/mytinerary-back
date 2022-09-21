@@ -117,6 +117,35 @@ const itineraryController = {
                 success: false
             })
         }
+    },
+
+    like: async (req, res) => {
+        let { id } = req.params
+        let { itineraryId } = req.user.id
+        try {
+            let itinerary = await Itinerary.findOne({_id: itineraryId})
+            if (itinerary.likes.includes(itineraryId)) {
+                itinerary.likes.pull(itineraryId)
+                await itinerary.save()
+                res.status(200).json({
+                    message: "Itinerary dislike it!",
+                    success: true
+                })
+            } else {
+                itinerary.likes.push(itineraryId)
+                await itinerary.save()
+                res.status(200).json({
+                    message: "Itinerary like it!",
+                    success: true
+                })
+            }
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({
+                message: 'error',
+                success: false
+            })
+        }
     }
 }
 
