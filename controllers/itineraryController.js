@@ -123,7 +123,7 @@ const itineraryController = {
         let { id } = req.params
         let { itineraryId } = req.user.id
         try {
-            let itinerary = await Itinerary.findOne({_id: itineraryId})
+            let itinerary = await Itinerary.findOne({_id: id})
             if (itinerary.likes.includes(itineraryId)) {
                 itinerary.likes.pull(itineraryId)
                 await itinerary.save()
