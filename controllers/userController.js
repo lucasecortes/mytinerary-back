@@ -181,6 +181,23 @@ const userController = {
     }
   },
 
+  verifyToken: async (res, req) => {
+    if (req.user !== null) {
+      res.status(200).json({
+        success: true,
+        response: {
+          user: req.user
+        },
+        message: 'Welcome ' + req.user.name + '!'
+      })
+    } else {
+      res.status(401).json({
+        success: false,
+        message: 'Sign in please'
+      })
+    }
+  },
+
   signIn: async (req, res) => {
     const { mail, password, from } = req.body;
 
@@ -264,10 +281,10 @@ const userController = {
   },
 
   signOut: async (req, res) => {
-    const { mail } = req.body;
+    const { _id } = req.body;
 
     try {
-      const user = await User.findOne({ mail });
+      const user = await User.findOne({ _id });
 
       user.loggedIn = false;
       await user.save();
