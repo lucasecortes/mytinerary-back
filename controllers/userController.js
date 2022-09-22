@@ -98,7 +98,7 @@ const userController = {
             photo,
             mail,
             password: [password],
-            role: "user",
+            role,
             from: [from],
             loggedIn,
             verified,
@@ -264,16 +264,16 @@ const userController = {
   },
 
   signOut: async (req, res) => {
-    const { mail } = req.body;
-
+    const { _id } = req.body;
+    console.log(req.body)
     try {
-      const user = await User.findOne({ mail });
+      const user = await User.findOne({  _id });
 
       user.loggedIn = false;
       await user.save();
 
       res.status(200).json({
-        message: "Good bye sir " + user.name,
+        message: "Good bye sir " + user.name + " " + user.lastName,
         success: true,
       });
     } catch (error) {
@@ -284,6 +284,31 @@ const userController = {
       });
     }
   },
+  updateUser: async(req, res) => {
+    const {id} = req.params
+    try {
+        let user = await User.findOne({_id:id})
+        if (user) {
+            await User.findOneAndUpdate({_id:id},req.body,{new:true})
+            res.status(200).json({
+                message: 'User updated',
+                success: true
+            })
+        } else {
+            res.status(404).json({
+                message: 'Could not find user',
+                success: false
+            })
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({
+            message: 'Error',
+            success: false
+        })
+    }
+},
+  
 };
 
 module.exports = userController;
