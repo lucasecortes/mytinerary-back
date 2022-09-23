@@ -181,6 +181,23 @@ const userController = {
     }
   },
 
+  verifyToken: async (res, req) => {
+    if (req.user !== null) {
+      res.status(200).json({
+        success: true,
+        response: {
+          user: req.user
+        },
+        message: 'Welcome ' + req.user.name + '!'
+      })
+    } else {
+      res.status(401).json({
+        success: false,
+        message: 'Sign in please'
+      })
+    }
+  },
+
   signIn: async (req, res) => {
     const { mail, password, from } = req.body;
 
@@ -235,11 +252,12 @@ const userController = {
 
             user.loggedIn = true;
             await user.save();
+            const token = jwt.sign({id: user._id}, process.env.KEY_JWT, {expiresIn: 60*60*24})
 
             res.status(200).json({
               message: "Welcome " + user.name,
               success: true,
-              response: { user: loginUser },
+              response: { user: loginUser , token: token},
             });
           } else {
             res.status(400).json({
@@ -265,9 +283,9 @@ const userController = {
 
   signOut: async (req, res) => {
     const { _id } = req.body;
-    console.log(req.body)
-    try {
-      const user = await User.findOne({  _id });
+
+      const user = await User.findOne({ _id });
+
 
       user.loggedIn = false;
       await user.save();

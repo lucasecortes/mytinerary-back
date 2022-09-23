@@ -3,7 +3,6 @@ let passport = require('../config/passport');
 var router = express.Router();
 const {all, oneUser, verifyMail, verifyToken, signUp, signIn, signOut, updateUser} = require('../controllers/userController')
 
-
 /* GET users listing. */
 router.get('/', all);
 router.get('/:id', oneUser);
@@ -16,5 +15,3 @@ router.post('/signin', signIn)
 router.get('/verification/:code', verifyMail)
 
 module.exports = router;
-
-// passport.authenticate('jwt', {session:false}),

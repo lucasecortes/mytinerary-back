@@ -12,15 +12,15 @@ passport.use(
             secretOrKey: KEY_JWT
         }, // nos retorna un objeto jwt_payload(con la data del token)
         async (jwt_payload,done) => {
-            console.log(jwt_payload)
+            // console.log(jwt_payload)
             try {
                 let user = await User.findOne({_id:jwt_payload.id})
-                console.log(user)
+                // console.log(user)
                 if (user) {
                     user = {
                         id: user._id,
                         name: user.name,
-                        email: user.email,
+                        mail: user.mail,
                         role: user.role,
                         photo: user.photo,
                     }
