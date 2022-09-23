@@ -283,9 +283,8 @@ const userController = {
 
   signOut: async (req, res) => {
     const { _id } = req.body;
-
+    try {
       const user = await User.findOne({ _id });
-
 
       user.loggedIn = false;
       await user.save();
