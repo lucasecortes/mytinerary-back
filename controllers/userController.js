@@ -5,18 +5,29 @@ const sendMail = require("../controllers/sendMail");
 const Joi = require("joi");
 const jwt = require('jsonwebtoken')
 
-
 const validator = Joi.object({
   name: Joi.string()
     .pattern(/^[a-zA-Z ]+$/)
     .min(3)
     .max(15)
-    .required(),
+    .required()
+    .messages({
+      'any.required': 'NAME_REQUIRED',
+      'string.empty': 'NAME_REQUIRED',
+      'string.min': 'NAME_TOO_SHORT',
+      'string.max': 'NAME_TOO_LARGE',
+    }),
   lastName: Joi.string()
     .pattern(/^[a-zA-Z ]+$/)
     .min(3)
     .max(15)
-    .required(),
+    .required()
+    .messages({
+      'any.required': 'LAST_NAME_REQUIRED',
+      'string.empty': 'LAST_NAME_REQUIRED',
+      'string.min': 'LAST_NAME_TOO_SHORT',
+      'string.max': 'LAST_NAME_TOO_LARGE',
+    }),
   mail: Joi.alternatives()
     .try(
       Joi.string()
@@ -27,6 +38,11 @@ const validator = Joi.object({
         })
     )
     .required()
+    .messages({
+      'any.required': 'EMAIL_REQUIRED',
+      'string.empty': 'EMAIL_REQUIRED',
+      'string.email': 'INVALID_EMAIL'
+    })
     .error(new Error("Invalid email")),
   photo: Joi.string().uri().required(),
   country: Joi.string().min(4).max(30).required(),
@@ -165,7 +181,7 @@ const userController = {
       if (user) {
         user.verified = true;
         await user.save();
-        res.redirect("http://localhost:3000/");
+        res.redirect("https://my-tinerary-duco.herokuapp.com/");
       } else {
         res.status(404).json({
           message: "Email has not account yet",
@@ -227,7 +243,7 @@ const userController = {
             user.loggedIn = true;
             await user.save();
 
-            const token = jwt.sign({id: user._id}, process.env.KEY_JWT, {expiresIn: 60*60*24})
+            const token = jwt.sign({ id: user._id }, process.env.KEY_JWT, { expiresIn: 60 * 60 * 24 })
 
             res.status(200).json({
               message: "Welcome " + user.name + " " + user.lastName,
@@ -252,12 +268,12 @@ const userController = {
 
             user.loggedIn = true;
             await user.save();
-            const token = jwt.sign({id: user._id}, process.env.KEY_JWT, {expiresIn: 60*60*24})
+            const token = jwt.sign({ id: user._id }, process.env.KEY_JWT, { expiresIn: 60 * 60 * 24 })
 
             res.status(200).json({
               message: "Welcome " + user.name,
               success: true,
-              response: { user: loginUser , token: token},
+              response: { user: loginUser, token: token },
             });
           } else {
             res.status(400).json({
@@ -301,31 +317,31 @@ const userController = {
       });
     }
   },
-  updateUser: async(req, res) => {
-    const {id} = req.params
+  updateUser: async (req, res) => {
+    const { id } = req.params
     try {
-        let user = await User.findOne({_id:id})
-        if (user) {
-            await User.findOneAndUpdate({_id:id},req.body,{new:true})
-            res.status(200).json({
-                message: 'User updated',
-                success: true
-            })
-        } else {
-            res.status(404).json({
-                message: 'Could not find user',
-                success: false
-            })
-        }
-    } catch (error) {
-        console.log(error)
-        res.status(400).json({
-            message: 'Error',
-            success: false
+      let user = await User.findOne({ _id: id })
+      if (user) {
+        await User.findOneAndUpdate({ _id: id }, req.body, { new: true })
+        res.status(200).json({
+          message: 'User updated',
+          success: true
         })
+      } else {
+        res.status(404).json({
+          message: 'Could not find user',
+          success: false
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      res.status(400).json({
+        message: 'Error',
+        success: false
+      })
     }
-},
-  
+  },
+
 };
 
 module.exports = userController;
