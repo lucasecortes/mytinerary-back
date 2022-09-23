@@ -32,7 +32,7 @@ const sendMail = async (mail, code) => {
         html: `
                 <div>
                     <h1>Hello ${mail}</h1>
-                    <a href="http://localhost:4000/auth/verification/${code}">Click to verify</a>
+                    <a href="https://my-tinerary-back-duco.herokuapp.com/auth/verification/${code}">Click to verify</a>
                 </div>
                 <p>If you didn't create an account using this email, please ignore this email.</p>
             `
