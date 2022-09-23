@@ -17,16 +17,17 @@ const itineraryController = {
 
         try {
             let result = await validator.validateAsync(req.body)
-            await new Itinerary({name, user, city, price, likes, tags, duration}).save()
+           let itinerary = await new Itinerary({name, user, city, price, likes, tags, duration}).save()
             res.status(201).json({
                 message: 'Itinerary created',
-                success: true
+                success: true,
+                response: itinerary
             })
         } catch (error) {
             console.log(error)
             res.status(400).json({
                 message: "Couldn't itinerary created",
-                success: false
+                success: false                
             })
         }
     },
