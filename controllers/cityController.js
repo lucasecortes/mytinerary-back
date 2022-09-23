@@ -2,11 +2,31 @@ const City = require('../models/City')
 const Joi = require('joi')
 
 const validator = Joi.object({
-    city: Joi.string().pattern(/^[a-zA-Z ]+$/).required(),
-    country: Joi.string().pattern(/^[a-zA-Z]+$/).required(),
-    photo: Joi.string().uri().required(),
-    population: Joi.number().integer().min(1000).max(100000000).required(),
-    founded: Joi.date().required()
+    city: Joi.string().pattern(/^[a-zA-Z ]+$/).required().messages({
+        'any.required': 'CITY_REQUIRED',
+        'string.empty': 'CITY_REQUIRED',
+    }),
+    country: Joi.string().pattern(/^[a-zA-Z]+$/).required().messages({
+        'any.required': 'COUNTRY_REQUIRED',
+        'string.empty': 'COUNTRY_REQUIRED',
+    }),
+    photo: Joi.string().uri().required().messages({
+        'any.required': 'PHOTO_REQUIRED',
+        'string.empty': 'PHOTO_REQUIRED',
+        'string.uri':'INVALID_URL'
+    }),
+    population: Joi.number().integer().min(1000).max(100000000).required().messages({
+        'number.base': 'INVALID_POPULATION',
+        'any.required': 'POPULATION_REQUIRED',
+        'number.empty': 'POPULATION_REQUIRED',
+        'number.min': 'POPULATION_TOO_SMALL',
+        'number.max': 'POPULATION_TOO_MUCH',
+    }),
+    founded: Joi.date().required().messages({
+        'any.required': 'DATE_REQUIRED',
+        'string.empty': 'DATE_REQUIRED',
+        'date.greater': 'INVALID_DATE'
+    })
 })
 
 const cityController = {
