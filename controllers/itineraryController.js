@@ -120,6 +120,7 @@ const itineraryController = {
     },
 
     like: async (req, res) => {
+        // console.log(req)
         let { id } = req.params
         let { itineraryId } = req.user.id
         try {
