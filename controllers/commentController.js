@@ -18,7 +18,31 @@ const commentController = {
             })
         }
     },
-
+    update: async(req, res) => {
+        const {id} = req.params
+        try {
+            let comment = await Comment.findOne({_id:id})
+            if (comment) {
+                await Comment.findOneAndUpdate({_id:id},req.body,{new:true})
+                res.status(200).json({
+                    message: 'Comment update',
+                    success: true,
+                    response: comment
+                })
+            } else {
+                res.status(404).json({
+                    message: "Couldn't find Comment",
+                    success: false                    
+                })
+            }
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({
+                message: 'Error',
+                success: false
+            })
+        }
+    },
     all: async(req, res) => {
         let query = {}
 
@@ -48,7 +72,31 @@ const commentController = {
                 success: false,
             })
         }
-    }
+    },
+    destroy: async(req,res) => {
+        const {id} = req.params
+        try {
+            let comment = await Comment.findOne({_id:id})
+            if (comment) {
+                await Comment.findOneAndDelete({_id:id})
+                res.status(200).json({
+                    message: 'Comment deleted',
+                    success: true
+                })
+            } else {
+                res.status(404).json({
+                    message: "Comment don't exist",
+                    success: false
+                })
+            }
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({
+                message: 'Error',
+                success: false
+            })
+        }
+    },
 }
 
 module.exports = commentController
