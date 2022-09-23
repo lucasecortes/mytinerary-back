@@ -2,13 +2,36 @@ const Itinerary = require('../models/Itinerary')
 const Joi = require('joi')
 
 const validator = Joi.object({
-    name: Joi.string().min(3).max(50).required(),
-    user: Joi.string().hex().required(),
-    city: Joi.string().hex().required(),
-    price: Joi.number().integer().min(0).max(500).required(),
+    name: Joi.string().min(3).max(50).required().messages({
+        'any.required': 'NAME_REQUIRED',
+        'string.empty': 'NAME_REQUIRED',
+        'string.min': 'NAME_TOO_SHORT',
+        'string.max': 'NAME_TOO_LARGE',
+    }),
+    user: Joi.string().hex().required().messages({
+        'any.required': 'USER_REQUIRED',
+        'string.empty': 'USER_REQUIRED',
+    }),
+    city: Joi.string().hex().required().messages({
+        'any.required': 'CITY_REQUIRED',
+        'string.empty': 'CITY_REQUIRED',
+    }),
+    price: Joi.number().integer().min(0).max(500).required().messages({
+        'number.base': 'INVALID_PRICE',
+        'any.required': 'PRICE_REQUIRED',
+        'number.empty': 'PRICE_REQUIRED',
+        'number.min': 'INVALID_PRICE',
+        'number.max': 'PRICE_TOO_MUCH',
+    }),
     likes: Joi.array().required(),
     tags: Joi.array().required(),
-    duration: Joi.number().integer().min(1).max(200).required()
+    duration: Joi.number().integer().min(1).max(200).required().messages({
+        'number.base': 'INVALID_DURATION',
+        'any.required': 'DURATION_REQUIRED',
+        'number.empty': 'DURATION_REQUIRED',
+        'number.min': 'DURATION_TOO_SHORT',
+        'number.max': 'DURATION_TOO_LARGE',
+    })
 })
 
 const itineraryController = {
