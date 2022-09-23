@@ -252,11 +252,12 @@ const userController = {
 
             user.loggedIn = true;
             await user.save();
+            const token = jwt.sign({id: user._id}, process.env.KEY_JWT, {expiresIn: 60*60*24})
 
             res.status(200).json({
               message: "Welcome " + user.name,
               success: true,
-              response: { user: loginUser },
+              response: { user: loginUser , token: token},
             });
           } else {
             res.status(400).json({
