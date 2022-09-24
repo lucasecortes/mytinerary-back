@@ -5,16 +5,18 @@ const commentController = {
         const {comment, user, itinerary} = req.body
 
         try {
-            await new Comment({comment, user, itinerary}).save()
+           let id = await new Comment({comment, user, itinerary}).save()
             res.status(201).json({
                 message: "Comment created",
-                success: true
+                success: true,
+                response: id._id
             })
         } catch (error) {
             console.log(error)
             res.status(400).json({
                 message: "Couldn't comment created",
                 success: false
+                
             })
         }
     },
