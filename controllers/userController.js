@@ -165,7 +165,7 @@ const userController = {
       if (user) {
         user.verified = true;
         await user.save();
-        res.redirect("http://localhost:3000/");
+        res.redirect("https://my-tinerary-duco.herokuapp.com/");
       } else {
         res.status(404).json({
           message: "Email has not account yet",
