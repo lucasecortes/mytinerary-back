@@ -131,7 +131,7 @@ const itineraryController = {
                 itinerary.likes.pull(itineraryId)
                 await itinerary.save()
                 res.status(200).json({
-                    message: "Itinerary dislike it!",
+                    message: "Itinerary disliked!",
                     success: true,
                     response: itinerary.likes
                 })
